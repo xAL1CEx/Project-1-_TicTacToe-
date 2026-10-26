@@ -111,9 +111,9 @@ void getSelect(struct statusGame *St, int *row, int *col)
                 while (getchar() != '\n')
                     ;
             }
-            else if (select < 1 || select > 9)
+            else if (select < 1 || select > (maxRowCol * maxRowCol))
             {
-                printf("[Error] must select number more than 1 and less than 9\n");
+                printf("[Error] must select number more than 1 and less than %d\n", maxRowCol * maxRowCol);
                 while (getchar() != '\n')
                     ;
             }
@@ -126,8 +126,8 @@ void getSelect(struct statusGame *St, int *row, int *col)
         // cal row col
         int n = select - 1;
 
-        *row = n / 3;
-        *col = n % 3;
+        *row = n / maxRowCol;
+        *col = n % maxRowCol;
 
         int checker = check_isemty(St, row, col);
         if (checker == 1)
@@ -211,6 +211,26 @@ int checkwinner(struct statusGame *st)
     return 0;
 }
 
+void Celebration(struct statusGame *st)
+{
+    showBoard(st);
+
+    if (st->iswin == 1)
+    {
+        printf("\n===================================\n");
+        printf("      !!! WE HAVE WINNER!!!!            \n");
+        printf("===================================\n");
+        printf(">>>>>>>>>>>> [ %c ] <<<<<<<<<<<<<<<\n", st->turn);
+    }
+
+    else
+    {
+        printf("\n===================================\n");
+        printf("     The match ended in a draw.      \n");
+        printf("===================================\n");
+    }
+}
+
 int main()
 {
     // set up board
@@ -244,12 +264,15 @@ int main()
 
         if (winner == 1)
         {
+            st.iswin = 1;
             break;
         }
 
         ChangeTurn(&st);
         round++;
     }
+
+    Celebration(&st);
 
     return 0;
 }
