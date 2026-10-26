@@ -80,37 +80,61 @@ void ChangeTurn(struct statusGame *T)
     T->turn = (T->turn == 'X') ? 'O' : 'X';
 }
 
-void getSelect(struct statusGame *St, int *col, int *row)
+int check_isemty(struct statusGame *st, int col, int row)
+{
+
+    if (st->Board.Mainboard[row][col] == ' ')
+    {
+        return 1;
+    }
+    else
+    {
+        printf("already taken\n");
+    }
+
+    return 0;
+}
+
+void getSelect(struct statusGame *St)
 {
     int select;
 
-    // for get number
     while (1)
     {
-        printf("Turn [%c] select >> ", St->turn);
-        if (scanf("%d", &select) != 1)
+        // for get number
+        while (1)
         {
-            printf("[Error] when select must be only number\n");
-            while (getchar() != '\n')
-                ;
+            printf("Turn [%c] select >> ", St->turn);
+            if (scanf("%d", &select) != 1)
+            {
+                printf("[Error] when select must be only number\n");
+                while (getchar() != '\n')
+                    ;
+            }
+            else if (select < 1 || select > 9)
+            {
+                printf("[Error] must select number more than 1 and less than 9\n");
+                while (getchar() != '\n')
+                    ;
+            }
+            else
+            {
+                break;
+            }
         }
-        else if (select < 1 || select > 9)
-        {
-            printf("[Error] must select number more than 1 and less than 9\n");
-            while (getchar() != '\n')
-                ;
-        }
-        else
+
+        // cal row col
+        int n = select - 1;
+
+        int row = n / 3;
+        int col = n % 3;
+
+        int checker = check_isemty(St, col, row);
+        if (checker == 1)
         {
             break;
         }
     }
-
-    // cal row col
-    int n = select - 1;
-
-    *row = n / 3;
-    *col = n % 3;
 }
 
 int main()
@@ -120,10 +144,7 @@ int main()
     clearBoard(&st);
     st.turn = 'X';
 
-    int col;
-    int row;
-
-    st.iswin = 0; // change back when game ready now just for test easier let is 1
+    st.iswin = 0;
 
     //==================================================================================
 
@@ -138,7 +159,7 @@ int main()
         showBoard(&st);
         printf("\n");
 
-        getSelect(&st, &col, &row);
+        getSelect(&st);
 
         ChangeTurn(&st);
     }
