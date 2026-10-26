@@ -80,10 +80,10 @@ void ChangeTurn(struct statusGame *T)
     T->turn = (T->turn == 'X') ? 'O' : 'X';
 }
 
-int check_isemty(struct statusGame *st, int col, int row)
+int check_isemty(struct statusGame *st, int *row, int *col)
 {
 
-    if (st->Board.Mainboard[row][col] == ' ')
+    if (st->Board.Mainboard[*row][*col] == ' ')
     {
         return 1;
     }
@@ -95,7 +95,7 @@ int check_isemty(struct statusGame *st, int col, int row)
     return 0;
 }
 
-void getSelect(struct statusGame *St)
+void getSelect(struct statusGame *St, int *row, int *col)
 {
     int select;
 
@@ -126,15 +126,22 @@ void getSelect(struct statusGame *St)
         // cal row col
         int n = select - 1;
 
-        int row = n / 3;
-        int col = n % 3;
+        *row = n / 3;
+        *col = n % 3;
 
-        int checker = check_isemty(St, col, row);
+        int checker = check_isemty(St, row, col);
         if (checker == 1)
         {
             break;
         }
     }
+}
+
+void add_select(struct statusGame *st, int *row, int *col)
+{
+    char OBJ = st->turn;
+
+    st->Board.Mainboard[*row][*col] = OBJ;
 }
 
 int main()
@@ -144,6 +151,7 @@ int main()
     clearBoard(&st);
     st.turn = 'X';
 
+    int row, col;
     st.iswin = 0;
 
     //==================================================================================
@@ -159,7 +167,9 @@ int main()
         showBoard(&st);
         printf("\n");
 
-        getSelect(&st);
+        getSelect(&st, &row, &col);
+
+        add_select(&st, &row, &col);
 
         ChangeTurn(&st);
     }
