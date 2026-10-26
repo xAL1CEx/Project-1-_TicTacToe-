@@ -144,6 +144,73 @@ void add_select(struct statusGame *st, int *row, int *col)
     st->Board.Mainboard[*row][*col] = OBJ;
 }
 
+int checkwinner(struct statusGame *st)
+{
+
+    for (size_t i = 0; i < maxRowCol; i++)
+    {
+        int counter_col = 0;
+
+        for (size_t j = 0; j < maxRowCol; j++)
+        {
+            if (st->Board.Mainboard[i][j] == st->turn)
+            {
+                counter_col++;
+            }
+        }
+
+        if (counter_col == maxRowCol)
+        {
+            return 1;
+        }
+    }
+
+    for (size_t j = 0; j < maxRowCol; j++)
+    {
+        int counter_row = 0;
+
+        for (size_t i = 0; i < maxRowCol; i++)
+        {
+            if (st->Board.Mainboard[i][j] == st->turn)
+            {
+                counter_row++;
+            }
+        }
+
+        if (counter_row == maxRowCol)
+        {
+            return 1;
+        }
+    }
+
+    int counter_diadown = 0;
+
+    for (size_t i = 0; i < maxRowCol; i++)
+    {
+        if (st->Board.Mainboard[i][i] == st->turn)
+        {
+            counter_diadown++;
+        }
+    }
+
+    int counter_diaup = 0;
+
+    for (size_t i = 0; i < maxRowCol; i++)
+    {
+        if (st->Board.Mainboard[i][(maxRowCol - 1) - i] == st->turn)
+        {
+            counter_diaup++;
+        }
+    }
+
+    if (counter_diadown == maxRowCol || counter_diaup == maxRowCol)
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
 int main()
 {
     // set up board
@@ -154,6 +221,8 @@ int main()
     int row, col;
     st.iswin = 0;
 
+    int round = 1;
+
     //==================================================================================
 
     printf("==== Welcome to Tictactoe game!! ====\n");
@@ -161,7 +230,7 @@ int main()
     titleboard(&st);
     printf("\n[Press a number to select a space on the board.]\n\n");
 
-    while (st.iswin == 0)
+    while (round != ((maxRowCol * maxRowCol) + 1))
     {
 
         showBoard(&st);
@@ -171,7 +240,15 @@ int main()
 
         add_select(&st, &row, &col);
 
+        int winner = checkwinner(&st);
+
+        if (winner == 1)
+        {
+            break;
+        }
+
         ChangeTurn(&st);
+        round++;
     }
 
     return 0;
